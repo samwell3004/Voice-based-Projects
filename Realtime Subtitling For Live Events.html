@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Real-Time Subtitling</title>
+  <style>
+    /* Style for the entire body */
+    body {
+      font-family: sans-serif;
+      padding: 2rem;
+      background-color: #111;
+      color: #0f0;
+    }
+
+    /* Style for the heading */
+    h1 {
+      font-size: 2rem;
+    }
+
+    /* Style for the buttons */
+    button {
+      padding: 1rem 2rem;
+      font-size: 1.2rem;
+      margin-top: 1rem;
+      cursor: pointer;
+      background-color: #0f0;
+      color: #111;
+      border: none;
+      border-radius: 5px;
+    }
+
+    /* Style for the subtitle area */
+    #subtitle {
+      font-size: 2rem;
+      line-height: 1.5;
+      margin-top: 2rem;
+      border-top: 2px solid #0f0;
+      padding-top: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <h1>Real-Time Subtitling</h1>
+  <button onclick="startRecognition()">Start Subtitling</button>
+  <button onclick="stopRecognition()">Stop Subtitling</button> <!-- Button to stop the recognition -->
+  <div id="subtitle">...</div>
+
+  <script>
+    let recognition;
+    const subtitleDiv = document.getElementById("subtitle");
+
+    function startRecognition() {
+      // Check for browser support
+      if (!('webkitSpeechRecognition' in window)) {
+        alert("Speech Recognition not supported in this browser.");
+        return;
+      }
+
+      recognition = new webkitSpeechRecognition();
+      recognition.continuous = true;
+      recognition.interimResults = true;
+      recognition.lang = 'en-US';
+
+      // Event when speech is recognized
+      recognition.onresult = function(event) {
+        let transcript = '';
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+          transcript += event.results[i][0].transcript;
+        }
+        subtitleDiv.textContent = transcript;
+      };
+
+      // Error handling
+      recognition.onerror = function(event) {
+        console.error("Speech Recognition Error:", event.error);
+      };
+
+      // Start recognition
+      recognition.start();
+    }
+
+    function stopRecognition() {
+      if (recognition) {
+        recognition.stop();
+        subtitleDiv.textContent = 'Recognition Stopped';
+      }
+    }
+  </script>
+</body>
+</html>
